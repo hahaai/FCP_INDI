@@ -106,6 +106,12 @@ rm -r $(find ABIDE/RawDataBIDS  -iname '*sub-*' -type d)
 
 
 # sync to 
-aws s3 sync ABIDE/RawDataBIDS s3://fcp-indi/data/Projects/ABIDE/RawDataBIDS/ --acl public-read
+aws s3 sync ABIDE/RawDataBIDS s3://fcp-indi/data/Projects/ABIDE/RawDataBIDS --acl public-read
+
+
+
+
+############################################################## ABIDE2 
+# done on sever entirely.
 
 
