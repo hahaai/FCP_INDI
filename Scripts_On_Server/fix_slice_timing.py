@@ -4,7 +4,7 @@ import numpy as np
 import sys
 
 datain='/data3/cdb/FCP_INDI/FIX_Dataset/ABIDE2/RawData'
-
+datain='/data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS'
 for site in  os.listdir(datain):
     if site == '.DS_Store':
         continue

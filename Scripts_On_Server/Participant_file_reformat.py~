@@ -4,8 +4,8 @@ import sys
 import pandas as pd
 import numpy as np
 
-folder='/data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS'
-for site in ['MRN']:
+folder='/data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/MRN'
+for site in os.listdir(folder):
     if site == ".DS_Store":
         continue
     print(site)
