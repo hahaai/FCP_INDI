@@ -18,8 +18,8 @@ done
 sample=/data3/cdb/FCP_INDI/FIX_Dataset/CORR/dataset_description.json
 datain='/data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS'
 for i in $(ls $datain);do 
-	cp $sample $datain'/'$i/.
-	sed -i 's/XXXXXX/'$i'/g' $datain'/'$i'/dataset_description.json'
+    cp $sample $datain'/'$i/.
+    sed -i 's/XXXXXX/'$i'/g' $datain'/'$i'/dataset_description.json'
 done
 
 
@@ -129,12 +129,36 @@ docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/LMU_2:/d
 docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/MRN:/data:ro bids/validator:v1.4.2 /data
 
 
+# NKI_TRT - done
+rm /data3/cdb/FCP_INDI/FIX_Dataset/CORR/tmp.txt
+docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/NKI_TRT:/data:ro bids/validator:v1.4.2 /data --verbose >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/tmp.txt
+# one of json file named incorrectly.
+# change task-breathholding_acq-tr1400ms_bold.json to task-breathhold_acq-tr1400ms_bold.json
+# Slice timing are larger than the TR in most json file. deleted slice timing form it. put the old files in a zip file, bids ignore the zip file.
+echo Old_bold.json.tar.gz >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/NKI_TRT/.bidsignore
 
 
+# SWU_4  - done
+# ./sub-0025754/ses-1/dwi/sub-0025754_ses-1_run-1_dwi.nii.gz does not have bvec and bval, put in into ignorefile
+echo '# the dwi file does not have  bval and bvec file'>> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/SWU_4/.bidsignore
+echo sub-0025754/ses-1/dwi/sub-0025754_ses-1_run-1_dwi.nii.gz >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/SWU_4/.bidsignore
+docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/SWU_4:/data:ro bids/validator:v1.4.2 /data
 
 
+# UM - done
+# TR not match, some nifti headers have empty tr and give it 1. mri_info can check. 
+for i in $(find /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/UM -iname '*bold.nii.gz*'); do 
+    tr=$(3dinfo -tr $i);
+    if [[ $tr != '2.000000' ]];then 
+        echo $i; 
+        echo $tr
+        3drefit -TR 2 $i; 
+    fi;
+done
+docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/UM:/data:ro bids/validator:v1.4.2 /data
 
 
+# 
 
 
 # MPG_1
@@ -149,6 +173,14 @@ done
 
 
 
+
+
+## update the S3 bucket
+aws s3 sync /data3/cdb/FCP_INDI/FIX_Dataset/ABIDE2/RawData s3://fcp-indi/data/Projects/ABIDE2/RawData --acl public-read --profile FCP-INDI --dryrun
+
+
+
+
 ###########3
 rm /data3/cdb/FCP_INDI/FIX_Dataset/CORR/tmp.txt
-docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/LMU_1:/data:ro bids/validator:v1.4.2 /data --verbase >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/tmp.txt
+docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/LMU_1:/data:ro bids/validator:v1.4.2 /data --verbose >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/tmp.txt
