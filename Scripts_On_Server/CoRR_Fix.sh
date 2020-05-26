@@ -158,10 +158,64 @@ done
 docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/UM:/data:ro bids/validator:v1.4.2 /data
 
 
-# 
+# UPSM_1 - done
+# ./sub-0025304/ses-1/func/sub-0025304_ses-1_task-rest_run-1_bold.nii.gz tr is 1.6, different with the 1.5 in the json file
+# participarnt file need to be reformated.
+i_json='/data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/UPSM_1/sub-0025304/ses-1/func/sub-0025304_ses-1_task-rest_run-1_bold.json'
+tr=$(3dinfo -tr ${i_json/.json/.nii.gz})
+echo { >> $i_json
+echo '    "RepetitionTime": '${tr:0:5} >> $i_json
+echo } >> $i_json
+docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/UPSM_1:/data:ro bids/validator:v1.4.2 /data
 
 
-# MPG_1
+# Utah_1 - done
+# Physio files, need to ignored.
+echo  */*/*/*.txt >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_1/.bidsignore
+echo  */*/*/*.mat >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_1/.bidsignore
+echo  */*/*/*.puls >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_1/.bidsignore
+echo  */*/*/*.resp >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_1/.bidsignore
+echo  */*/*/*.resp.gz >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_1/.bidsignore
+echo  */*/*/*.puls.gz >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_1/.bidsignore
+
+# missed tr info in the nifiti header, write in.
+for i in $(find /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_1 -iname '*bold.nii.gz*'); do 
+    tr=$(3dinfo -tr $i);
+    if [[ $tr != '2.000000' ]];then 
+        echo $i; 
+        echo $tr
+        3drefit -TR 2 $i; 
+    fi;
+done
+docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_1:/data:ro bids/validator:v1.4.2 /data
+
+
+
+# Utah_2 - done
+# Physio files, need to ignored.
+echo  */*/*/*.txt >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_2/.bidsignore
+echo  */*/*/*.mat >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_2/.bidsignore
+echo  */*/*/*.puls >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_2/.bidsignore
+echo  */*/*/*.resp >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_2/.bidsignore
+echo  */*/*/*.resp.gz >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_2/.bidsignore
+echo  */*/*/*.puls.gz >> /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_2/.bidsignore
+
+# missed tr info in the nifiti header, write in.
+for i in $(find /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_2 -iname '*bold.nii*'); do 
+    tr=$(3dinfo -tr $i);
+    if [[ $tr != '2.000000' ]];then 
+        echo $i; 
+        echo $tr
+        3drefit -TR 2 $i; 
+    fi;
+done
+docker run -ti --rm -v /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/Utah_2:/data:ro bids/validator:v1.4.2 /data
+
+
+
+
+
+# MPG_1 -
 for i in $(find /data3/cdb/FCP_INDI/FIX_Dataset/CORR/RawDataBIDS/MPG_1 -iname '*bold.nii.gz*'); do 
     tr=$(3dinfo -tr $i);
     if [[ $tr != 'a3.000000' ]];then 
