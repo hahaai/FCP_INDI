@@ -1,0 +1,6 @@
+# "User_manage" compares the private and public NiTRC list, print out the ones in the public but not in the private, then need to add them in manually.
+
+User lists were copied from the main "admin" page of both projects into txt files, then some characters (list Users, line change, space) are removed by replace.
+
+## Last Checked dates: 10/19/2020, all up to date.
+
